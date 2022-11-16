@@ -3,9 +3,11 @@ import sharp from 'sharp'
 
 const config = useRuntimeConfig()
 
-export default defineEventHandler(async (event):Promise<String> => {
+export default defineEventHandler(async (event) => {
   const body = await useValidatedBody(event, z.object({
     imgUrl: z.string(),
+    screenH: z.number(),
+    screenW: z.number()
   }))
   
   const response = await $fetch(body.imgUrl, {
@@ -13,67 +15,92 @@ export default defineEventHandler(async (event):Promise<String> => {
   })
 
   const buffer = Buffer.from(response, "utf-8")
-
-  console.log(buffer.slice(0,8))
-
-  console.log(buffer.slice(8,12))
-
-
   
-  // const croppedImage = await resizeImage(buffer)
-  // console.log(croppedImage)
-  // await addTextOnImage(croppedImage)
+  let width:number
+  let height:number
+  let left:number 
+  let top:number
 
-  return "foo"
+  if(body.screenH >= 896 && body.screenW >= 768) {
+    width = 768
+    height = 896
+    await addTextOnImage(buffer, height, width)
+    return event.res.end()
+  }
+
+  width = Math.round(body.screenW * 0.98)
+  height = Math.round(body.screenH * 0.90)
+  left = Math.round((768 - body.screenW) / 2)
+  top = Math.round((896 - body.screenH) / 2)
+
+  const croppedImage = await resizeImage(buffer, width, height, left, top)
+  await addTextOnImage(croppedImage, height, width)
+
+  return event.res.end()
 })
 
 
-// async function resizeImage(image:Buffer):Promise<Buffer> {
-//
-//   try {
-//     const sharpInst = sharp(image)
-//       .extract({ width: 400, height: 800, left: 184, top: 40  })
-//       .toBuffer()
-//
-//     return sharpInst
-//   } catch(error) {
-//     console.log(error)
-//   }
-// }
-//
-//
-// async function addTextOnImage(image:Buffer) {
-//   try {
-//     const width = 400;
-//     const height = 50;
-//     const text = "Hello world, test";
-//
-//     const svgImage = `
-//     <svg width="${width}" height="${height}">
-//       <style>
-//         @import url("https://fonts.googleapis.com/css?family=Anonymous+Pro:400,400i,700,700i");
-//         @font-face{
-//           font-family: 'Space Mono';
-//           src: url(../../../fonts/SpaceMono-Bold.ttf);
-//           font-weight: bold;
-//           font-style: normal;
-//         }
-//         .title { fill: #fff; font-size: 20px;}
-//       </style>
-//       <text x="0%" y="50%" text-anchor="start" class="title" font-family="Anonymous Pro" font-weight="bold">${text}</text>
-//     </svg>
-//     `;
-//     const svgBuffer = Buffer.from(svgImage);
-//     const imageResp = await sharp(image)
-//       .composite([
-//         {
-//           input: svgBuffer,
-//           top: 700,
-//           left: 10,
-//         },
-//       ])
-//       .toFile("test-image.png");
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
+async function resizeImage(
+  image:Buffer, 
+  width:number, 
+  height:number,
+  left:number,
+  top:number
+):Promise<Buffer> {
+  try {
+    const croppedImg = sharp(image)
+      .extract({ width: width, height: height, left: left, top: top })
+      .toBuffer()
+    return croppedImg
+  } catch(error) {
+    console.log(error)
+  }
+}
+
+
+async function addTextOnImage(image:Buffer, imgHeight:number, imgWidth:number) {
+  try {
+    const svgWidth = imgWidth;
+    const svgHeight = 150;
+    const svgTopPos = imgHeight - svgHeight - 10
+    const lineOne = "Hyperspeed engaged";
+    const lineTwo = "Time and space a memory";
+    const lineThree = "Lightspeed traveler";
+
+    const svgImage = `
+    <svg width="${svgWidth}" height="${svgHeight}">
+      <style>
+        @import url("https://fonts.googleapis.com/css?family=Anonymous+Pro:400,400i,700,700i");
+        @font-face{
+          font-family: 'Space Mono';
+          src: url(../../../fonts/SpaceMono-Bold.ttf);
+          font-weight: bold;
+          font-style: normal;
+        }
+        .title { 
+          fill: #fff; 
+          font-size: 20px;
+          padding: 50px 50px 50px 50px;
+        }
+      </style>
+      <rect width="${svgWidth - 20}" height="${svgHeight}" rx="10" fill="black" fill-opacity="0.5"/>
+      <text y="20%" text-anchor="start" class="title" font-family="Anonymous Pro" font-weight="bold">${lineOne}
+        <tspan y="50%" text-anchor="start" class="title" font-family="Anonymous Pro" font-weight="bold">${lineTwo}</tspan>
+        <tspan y="75%" text-anchor="start" class="title" font-family="Anonymous Pro" font-weight="bold">${lineThree}</tspan>
+      </text>
+    </svg>
+    `;
+    const svgBuffer = Buffer.from(svgImage);
+    const imageResp = await sharp(image)
+      .composite([
+        {
+          input: svgBuffer,
+          top: svgTopPos,
+          left: 10,
+        },
+      ])
+      .toFile("test-image.png");
+  } catch (error) {
+    console.log(error);
+  }
+}
