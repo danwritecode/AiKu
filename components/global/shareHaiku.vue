@@ -1,6 +1,12 @@
 <template>
   <div class="relative h-[80vh] shadow-2xl shadow-violet-600/50">
     <div class="absolute -top-8 right-0 flex items-center justify-between w-full">
+      <button @click="downloadAiku()" type="button" class="inline-flex items-center focus:outline-none text-xs dark:text-zinc-100 text-zinc-800">
+        Download
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 w-6 h-6 dark:text-zinc-100 text-zinc-800">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+        </svg>
+      </button>
       <button @click="copyLink(`${config.public.baseUrl}/${haiku.strapiAikuId}`)" type="button" class="inline-flex items-center focus:outline-none text-xs dark:text-zinc-100 text-zinc-800">
         Copy Link 
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="ml-2 w-6 h-6 dark:text-zinc-100 text-zinc-800">
@@ -28,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+import domtoimage from 'dom-to-image'
 import { useHaikuStore } from '~/stores/haiku'
 
 const config = useRuntimeConfig()
@@ -48,4 +55,16 @@ const copyLink = (url: string) => {
   }
 };
 
+const downloadAiku = async () => {
+  const element = document.getElementById("aiku")
+  try {
+    const dataUrl = await domtoimage.toPng(element, { quality: 0.95})
+    var link = document.createElement('a');
+    link.download = `${aiku.value.data.id}_aiku.png`;
+    link.href = dataUrl;
+    link.click();
+  } catch(error){
+    console.log(error)
+  }
+}
 </script>
