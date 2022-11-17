@@ -9,6 +9,8 @@ export default defineEventHandler(async (event):Promise<Buffer> => {
     screenH: z.number(),
     screenW: z.number()
   }))
+
+  console.log(body)
   
   const response = await $fetch(body.imgUrl, {
     responseType: 'arrayBuffer'
