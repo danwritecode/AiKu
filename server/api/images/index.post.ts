@@ -35,7 +35,9 @@ export default defineEventHandler(async (event):Promise<Buffer> => {
   top = Math.round((896 - height) / 2)
 
   const croppedImage = await cropAndRadius(buffer, width, height, left, top)
-  return await addTextOnImage(croppedImage, height, width)
+  const finalImage = await addTextOnImage(croppedImage, height, width)
+  console.log(finalImage)
+  return finalImage
 })
 
 
