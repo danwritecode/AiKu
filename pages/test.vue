@@ -1,6 +1,8 @@
 <template>
   <div class="pt-20 mx-auto">
-    <img v-if="imgUrl" :src="imgUrl" alt="">    
+    <ClientOnly>
+      <img v-if="imgUrl" :src="imgUrl" alt="">    
+    </ClientOnly> 
   </div>
 </template>
 
