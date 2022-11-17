@@ -18,12 +18,13 @@ const { data } = await useFetch("/api/images", {
   server: false
 })
 
-console.log(data.value)
+const imgUrl = ref()
 
-const imgUrl = computed(() => {
+watch(data, () => {
+  console.log(data.value)
   if(data.value instanceof Blob) {
-    return URL.createObjectURL(data.value)
+    imgUrl.value = URL.createObjectURL(data.value)
   }
-  return null
 })
+
 </script>

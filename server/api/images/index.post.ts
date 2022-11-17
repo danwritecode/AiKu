@@ -9,8 +9,6 @@ export default defineEventHandler(async (event):Promise<Buffer> => {
     screenH: z.number(),
     screenW: z.number()
   }))
-
-  console.log(body)
   
   const response = await $fetch(body.imgUrl, {
     responseType: 'arrayBuffer'
@@ -35,9 +33,7 @@ export default defineEventHandler(async (event):Promise<Buffer> => {
   top = Math.round((896 - height) / 2)
 
   const croppedImage = await cropAndRadius(buffer, width, height, left, top)
-  const finalImage = await addTextOnImage(croppedImage, height, width)
-  console.log(finalImage)
-  return finalImage
+  return await addTextOnImage(croppedImage, height, width)
 })
 
 
