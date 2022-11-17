@@ -1,17 +1,29 @@
 <template>
   <div>
-    <img 
-      id="diff-image"
-      src="https://replicate.delivery/pbxt/ygtueiTM5A1HIK9YGmNsp81h2l1gRb9FEBfJXsJgzEQ9ld8PA/out-0.png"  
-    >
+    <img v-if="imgUrl" :src="imgUrl" alt="">    
   </div>
 </template>
 
 <script setup lang="ts">
-if(process.client) {
-  const img = document.getElementById("diff-image")
-  const arrayBuffer = await img.arrayBuffer()
-  console.log(arrayBuffer)
-}
+const img = "https://cms.aiku.app/uploads/29efe171_ef2a_4914_ac3a_8383432dd96a_43aa703f21.png"
 
+const { data } = await useFetch("/api/images", {
+  method: "POST",
+  body: {
+    "imgUrl": img,
+    "screenH": 844,
+	  "screenW": 390
+  },
+  responseType: "blob",
+  server: false
+})
+
+console.log(data.value)
+
+const imgUrl = computed(() => {
+  if(data.value instanceof Blob) {
+    return URL.createObjectURL(data.value)
+  }
+  return null
+})
 </script>
