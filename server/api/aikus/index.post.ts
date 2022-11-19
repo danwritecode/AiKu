@@ -3,7 +3,6 @@ import { useValidatedBody, z } from 'h3-zod'
 import { v4 as uuidv4 } from 'uuid';
 import { FormData } from 'formdata-node'
 import { ImageResponse, CreateAikuResponse } from '~/models/strapi'
-import { ImageProcessor } from '../../shared/ImageProcessing'
 
 const config = useRuntimeConfig()
 
@@ -16,12 +15,29 @@ export default defineEventHandler(async (event):Promise<number> => {
     presetId: z.number().nullable().optional()
   }))
   
-  const processor = new ImageProcessor()
-  processor.resizeImage()
-
   try {
+    // get image
+    // const imgArrayBuffer:Buffer = await $fetch(body.imgUrl, {
+    //   responseType: 'arrayBuffer'
+    // })
+    // ideally we just fetch this once as blob or arrayBuffer, fix later
+    const imgBlob:Blob = await $fetch(body.imgUrl, {
+      responseType: 'blob'
+    })
+
+    // const imgBuffer = Buffer.from(imgArrayBuffer, "utf-8")
+
+    // process image for card
+    // const cardImgBuffer = await processImage(imgBuffer, body.lineOne, body.lineTwo, body.lineThree)
+
     const aikuId = await uploadAiku(body.lineOne, body.lineTwo, body.lineThree, body.presetId)
-    await uploadImageByUrl(body.imgUrl, aikuId, "image")
+
+    // upload AiKu image
+    await uploadImage(imgBlob, aikuId, "image")
+
+    // upload Card image
+    // await uploadImage(cardImgBuffer, aikuId, "linkCard")
+
     return aikuId
   } catch(error) {
     console.log(error)
@@ -51,13 +67,13 @@ const uploadAiku = async (
   return response.data.id
 }
 
-const uploadImageByUrl = async (imgUrl:string, aikuId:number, fieldName: string):Promise<ImageResponse> => {
-  const imgResp = await $fetch(imgUrl, {
-    responseType: 'blob'
-  })
-  
+const uploadImage = async (img:Blob | Buffer, aikuId:number, fieldName: string):Promise<ImageResponse> => {
+  console.log(img)
+  console.log(aikuId)
+  console.log(fieldName)
+
   const form = new FormData()
-  form.append("files", imgResp, `${uuidv4()}.png`)
+  form.append("file", img, `${uuidv4()}.png`)
   form.append("ref", "api::aiku.aiku")
   form.append("refId", aikuId)
   form.append("field", fieldName)
@@ -69,109 +85,101 @@ const uploadImageByUrl = async (imgUrl:string, aikuId:number, fieldName: string)
     },
     body: form
   })
-
   return response
 }
 
-const uploadImageByBlob = async (img:Blob, aikuId:number, fieldName: string):Promise<ImageResponse> => {
-  const form = new FormData()
-  form.append("files", img, `${uuidv4()}.png`)
-  form.append("ref", "api::aiku.aiku")
-  form.append("refId", aikuId)
-  form.append("field", fieldName)
+const processImage = async (
+  img:Buffer, 
+  lineOne:string, 
+  lineTwo:string, 
+  lineThree:string
+):Promise<Buffer> => {
+  const width = 440
+  const height = 770
+  const left = Math.round((768 - width) / 2)
+  const top = Math.round((896 - height) / 2)
 
-  const response = await $fetch<ImageResponse>(`${config.strapiBase}/api/upload`, {
-    method: "POST",
-    headers: {
-      "Authorization": `bearer ${config.strapiToken}`,
-    },
-    body: form
-  })
-
-  return response
+  let image:Buffer
+  image = await cropAndRadius(img, width, height, left, top)
+  image = await addTextOnImage(image, height, width, lineOne, lineTwo, lineThree)
+  return image
 }
 
-
-async function cropAndRadius(
+const cropAndRadius = async (
   image:Buffer, 
   width:number, 
   height:number,
   left:number,
   top:number
-):Promise<Buffer> {
+):Promise<Buffer> => {
   const rect = Buffer.from(
     `<svg><rect x="0" y="0" width="${width}" height="${height}" rx="10" ry="10"/></svg>`
   );
-  try {
-    const croppedImg = sharp(image)
-      .extract({ width: width, height: height, left: left, top: top })
-      .composite([
-        { input: rect, blend: "dest-atop"}
-      ])
-      .toBuffer()
-    return croppedImg
-  } catch(error) {
-    console.log(error)
-  }
+  const croppedImg = sharp(image)
+    .extract({ width: width, height: height, left: left, top: top })
+    .composite([
+      { input: rect, blend: "dest-atop"}
+    ])
+    .toBuffer()
+  return croppedImg
 }
 
+const addTextOnImage = async (
+  image:Buffer, 
+  imgHeight:number, 
+  imgWidth:number,
+  lineOne:string,
+  lineTwo:string,
+  lineThree:string
+):Promise<Buffer> => {
+  const svgWidth = imgWidth;
+  const svgHeight = 150;
+  const svgTopPos = imgHeight - svgHeight - 10
 
-async function addTextOnImage(image:Buffer, imgHeight:number, imgWidth:number):Promise<Buffer> {
-  try {
-    const svgWidth = imgWidth;
-    const svgHeight = 150;
-    const svgTopPos = imgHeight - svgHeight - 10
-    const lineOne = "Hyperspeed engaged";
-    const lineTwo = "Time and space a memory";
-    const lineThree = "Lightspeed traveler";
+  const svgImage = `
+    <svg width="${svgWidth}" height="${svgHeight}">
+      <style>
+        <![CDATA[
+          @font-face{
+            font-family: 'Space Mono';
+            src: url(../../../fonts/SpaceMono-Bold.ttf);
+            font-weight: bold;
+            font-style: normal;
+          }
+          @font-face{
+            font-family: 'Space Mono';
+            src: url(../../../fonts/SpaceMono-Regular.ttf);
+            font-weight: normal;
+            font-style: normal;
+          }
+          .title { 
+            fill: #fff; 
+            font-size: 20px;
+          }
+          .tag {
+            fill: #e4e4e7
+            font-size: 20px;
+          }
+        ]]>
+      </style>
+      <rect width="${svgWidth - 20}" height="${svgHeight}" rx="10" fill="black" fill-opacity="0.5"/>
+      <text x="5%" y="35" text-anchor="start" class="title" font-family="Space Mono" font-weight="bold">${lineOne}
+        <tspan x="5%" y="65" text-anchor="start" class="title" font-family="Space Mono" font-weight="bold">${lineTwo}</tspan>
+        <tspan x="5%" y="95" text-anchor="start" class="title" font-family="Space Mono" font-weight="bold">${lineThree}</tspan>
+      </text>
+      <text x="5%" y="130" text-anchor="start" class="title" font-family="Space Mono" font-weight="normal">aiku.app</text>
+    </svg>
+    `;
+  const svgBuffer = Buffer.from(svgImage);
+  const imageResp = await sharp(image)
+    .composite([
+      {
+        input: svgBuffer,
+        top: svgTopPos,
+        left: 10,
+      },
+    ])
+    .toBuffer()
 
-    const svgImage = `
-      <svg width="${svgWidth}" height="${svgHeight}">
-        <style>
-          <![CDATA[
-            @font-face{
-              font-family: 'Space Mono';
-              src: url(../../../fonts/SpaceMono-Bold.ttf);
-              font-weight: bold;
-              font-style: normal;
-            }
-            @font-face{
-              font-family: 'Space Mono';
-              src: url(../../../fonts/SpaceMono-Regular.ttf);
-              font-weight: normal;
-              font-style: normal;
-            }
-            .title { 
-              fill: #fff; 
-              font-size: 20px;
-            }
-            .tag {
-              fill: #e4e4e7
-              font-size: 20px;
-            }
-          ]]>
-        </style>
-        <rect width="${svgWidth - 20}" height="${svgHeight}" rx="10" fill="black" fill-opacity="0.5"/>
-        <text x="5%" y="35" text-anchor="start" class="title" font-family="Space Mono" font-weight="bold">${lineOne}
-          <tspan x="5%" y="65" text-anchor="start" class="title" font-family="Space Mono" font-weight="bold">${lineTwo}</tspan>
-          <tspan x="5%" y="95" text-anchor="start" class="title" font-family="Space Mono" font-weight="bold">${lineThree}</tspan>
-        </text>
-        <text x="5%" y="130" text-anchor="start" class="title" font-family="Space Mono" font-weight="normal">aiku.app</text>
-      </svg>
-      `;
-    const svgBuffer = Buffer.from(svgImage);
-    const imageResp = await sharp(image)
-      .composite([
-        {
-          input: svgBuffer,
-          top: svgTopPos,
-          left: 10,
-        },
-      ])
-      .toBuffer()
-
-    return imageResp
-  } catch (error) {
-    console.log(error);
-  }
+  return imageResp
 }
