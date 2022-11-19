@@ -111,8 +111,55 @@ export interface GetAikuResponseAttributes {
   publishedAt: string;
   image:       GetAikuResponseImage;
   preset:      Preset;
-  linkCard:    GetAikuResponseImage;
+  linkCard:    GetAikuResponseLinkCard;
 }
+
+export interface GetAikuResponseLinkCard {
+  data: LinkCardData;
+}
+
+export interface LinkCardData {
+  id:         number;
+  attributes: LinkCardAttributes;
+}
+
+export interface LinkCardAttributes {
+  name:              string;
+  alternativeText:   null;
+  caption:           null;
+  width:             number;
+  height:            number;
+  formats:           LinkCardFormats;
+  hash:              string;
+  ext:               string;
+  mime:              string;
+  size:              number;
+  url:               string;
+  previewUrl:        null;
+  provider:          string;
+  provider_metadata: null;
+  createdAt:         string;
+  updatedAt:         string;
+}
+
+export interface LinkCardFormats {
+  thumbnail: LinkCardMedium;
+  small:     LinkCardMedium;
+  medium:    LinkCardMedium;
+}
+
+export interface LinkCardMedium {
+  name:   string;
+  hash:   string;
+  ext:    string;
+  mime:   string;
+  path:   null;
+  width:  number;
+  height: number;
+  size:   number;
+  url:    string;
+}
+
 
 export interface GetAikuResponseImage {
   data: GetAikuResponseImageData;

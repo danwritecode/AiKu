@@ -1,7 +1,7 @@
 import sharp from 'sharp'
 import { useValidatedBody, z } from 'h3-zod'
 import { v4 as uuidv4 } from 'uuid';
-import { FormData } from 'formdata-node'
+import { FormData, Blob } from 'formdata-node'
 import { ImageResponse, CreateAikuResponse } from '~/models/strapi'
 
 const config = useRuntimeConfig()
@@ -14,33 +14,29 @@ export default defineEventHandler(async (event):Promise<number> => {
     imgUrl: z.string(),
     presetId: z.number().nullable().optional()
   }))
-  
+
   try {
-    // get image
-    // const imgArrayBuffer:Buffer = await $fetch(body.imgUrl, {
-    //   responseType: 'arrayBuffer'
-    // })
-    // ideally we just fetch this once as blob or arrayBuffer, fix later
-    const imgBlob:Blob = await $fetch(body.imgUrl, {
-      responseType: 'blob'
+    const imgResp = await $fetch(body.imgUrl, {
+      responseType: 'arrayBuffer'
     })
 
-    // const imgBuffer = Buffer.from(imgArrayBuffer, "utf-8")
+    // create buffer for Sharp
+    const imgBufferSharp = Buffer.from(imgResp, "utf8")
+    const cardImgBuffer = await processImage(imgBufferSharp, body.lineOne, body.lineTwo, body.lineThree)
 
-    // process image for card
-    // const cardImgBuffer = await processImage(imgBuffer, body.lineOne, body.lineTwo, body.lineThree)
+    const baseImgBlob = new Blob([imgResp])
+    const cardImgBlob = new Blob([cardImgBuffer])
 
     const aikuId = await uploadAiku(body.lineOne, body.lineTwo, body.lineThree, body.presetId)
 
-    // upload AiKu image
-    await uploadImage(imgBlob, aikuId, "image")
-
-    // upload Card image
-    // await uploadImage(cardImgBuffer, aikuId, "linkCard")
-
+    // upload base image
+    await uploadImage(baseImgBlob, aikuId, "image")
+    // upload card image
+    await uploadImage(cardImgBlob, aikuId, "linkCard")
     return aikuId
   } catch(error) {
-    console.log(error)
+    event.res.statusCode = 500
+    event.res.end()
   }
 })
 
@@ -67,13 +63,10 @@ const uploadAiku = async (
   return response.data.id
 }
 
-const uploadImage = async (img:Blob | Buffer, aikuId:number, fieldName: string):Promise<ImageResponse> => {
-  console.log(img)
-  console.log(aikuId)
-  console.log(fieldName)
-
+const uploadImage = async (img:Blob, aikuId:number, fieldName:string):Promise<ImageResponse> => {
+  
   const form = new FormData()
-  form.append("file", img, `${uuidv4()}.png`)
+  form.append("files", img, `${uuidv4()}.png`)
   form.append("ref", "api::aiku.aiku")
   form.append("refId", aikuId)
   form.append("field", fieldName)
@@ -85,6 +78,7 @@ const uploadImage = async (img:Blob | Buffer, aikuId:number, fieldName: string):
     },
     body: form
   })
+
   return response
 }
 

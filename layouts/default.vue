@@ -2,26 +2,6 @@
   <div class="relative">
     <Html :class="isDark ? 'dark':''" >
       <Body class="dark:bg-zinc-800 bg-zinc-100"></Body>
-      <Head>
-        <!-- Primary Meta Tags -->
-        <Title>AiKu</Title>
-        <Meta name="title" content="AiKu" />
-        <Meta name="description" content="Write a haiku and watch as AI generates beautiful art for it." />
-
-        <!-- Open Graph / Facebook -->
-        <Meta property="og:type" content="website" />
-        <Meta property="og:url" content="https://www.aiku.app/" />
-        <Meta property="og:title" content="AiKu" />
-        <Meta name="description" content="Write a haiku and watch as AI generates beautiful art for it." />
-        <Meta property="og:image" content="" />
-
-        <!-- Twitter -->
-        <Meta property="twitter:card" content="summary_large_image" />
-        <Meta property="twitter:url" content="https://www.aiku.app/" />
-        <Meta property="twitter:title" content="AiKu" />
-        <Meta name="description" content="Write a haiku and watch as AI generates beautiful art for it." />
-        <Meta property="twitter:image" content="" />
-      </Head>
     </Html>
     <nav class="lg:absolute top-2 left-2 flex items-center space-x-4 px-4 py-4 lg:px-0 lg:py-0">
       <button v-if="!haiku.showOverlay" @click="showNav = !showNav" class="inline-flex dark:text-zinc-500 text-zinc-500">
