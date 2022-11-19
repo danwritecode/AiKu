@@ -5,6 +5,7 @@ import { FormData, Blob } from 'formdata-node'
 import { ImageResponse, CreateAikuResponse } from '~/models/strapi'
 
 const config = useRuntimeConfig()
+process.env.FONTCONFIG_PATH = "/var/task/fonts";
 
 export default defineEventHandler(async (event):Promise<number> => {
   const body = await useValidatedBody(event, z.object({
