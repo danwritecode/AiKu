@@ -35,7 +35,6 @@
 </template>
 
 <script setup lang="ts">
-import { NotificationType } from "~/stores/notification"
 
 const config = useRuntimeConfig()
 const client = useSupabaseClient()
@@ -49,9 +48,9 @@ const resetPassword = async() => {
   })
 
   if(error) {
-    useNoti(NotificationType.error, 'Uh oh', error.message)
+    useNoti("error", 'Uh oh', error.message)
     return
   }
-  useNoti(NotificationType.success, 'Email sent', "Reset link sent to your email")
+  useNoti("error", 'Email sent', "Reset link sent to your email")
 }
 </script>

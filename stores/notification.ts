@@ -1,15 +1,10 @@
 import { defineStore } from 'pinia'
 
-export enum NotificationType {
-  // info = 'info',
-  success = 'success',
-  // warning = 'warning',
-  error = 'error'
-}
+export type NotiType = "error" | "success"
 
 export const useNotificationStore = defineStore('notification', () => {
   const showNoti = ref(false)
-  const notiType:NotificationType = ref(null)
+  const notiType:NotiType = ref(null)
   const notiTitle = ref('')
   const notiMessage = ref('')
 

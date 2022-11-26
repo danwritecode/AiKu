@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { serverSupabaseUser } from '#supabase/server'
 import { User } from '@supabase/supabase-js';
 import { H3Event } from 'h3'
-import { aiku } from '../../../../node_modules/.prisma/client/index'
+import { aiku } from '~/prisma/client'
 
 const prisma = new PrismaClient()
 

@@ -92,7 +92,6 @@
 </template>
 
 <script setup lang="ts">
-import { NotificationType } from "~/stores/notification"
 
 const client = useSupabaseClient()
 
@@ -107,7 +106,7 @@ const signIn = async() => {
   })
 
   if(error) {
-    useNoti(NotificationType.error, 'Uh oh', error.message)
+    useNoti("error", 'Uh oh', error.message)
     return
   }
   navigateTo("/browse")

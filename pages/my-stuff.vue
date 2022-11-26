@@ -27,7 +27,7 @@
         </div>
 
         <div class="px-6 py-3 text-center text-sm font-medium">
-          <span class="dark:text-zinc-100 text-zinc-900">3</span>
+          <span class="dark:text-zinc-100 text-zinc-900">{{ collections.meta.totalCount }}</span>
           <span class="dark:text-zinc-300 text-zinc-600"> Collections</span>
         </div>
       </div>
@@ -64,7 +64,12 @@
     </div>
 
     <div class="mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 ">
-      <AikuCard v-for="aiku in aikusToRender" :key="aiku.id.toString()" :fields="aiku"/>
+      <AikuCard 
+        v-for="aiku in aikusToRender" 
+        :key="aiku.id.toString()" 
+        :fields="{ aiku: aiku, collections: collections }" 
+        @refetch-collections="getCollections()"
+      />
     </div>
 
     <nav class="mt-2 flex items-center justify-between py-3" aria-label="Pagination">
@@ -204,6 +209,19 @@ const sliceRenderedAikus = () => {
 
   // we need to slice from the loaded aikus
   aikusToRender.value = aikusLoaded.value.slice(sliceStart, sliceEnd)
+}
+
+
+// Collections
+const { data:collections, error:collectionsError, refresh:getCollections } = await useFetch("/api/users/collections", {
+  query: {
+    orderDir: "desc"
+  },
+  headers: useRequestHeaders(['cookie']),
+})
+
+if(collectionsError.value) {
+  console.log(collectionsError.value)
 }
 
 </script>

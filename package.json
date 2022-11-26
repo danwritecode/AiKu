@@ -5,7 +5,8 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "prismaSync": "npx prisma db pull && npx prisma generate"
   },
   "devDependencies": {
     "@nuxtjs/supabase": "^0.2.5",
