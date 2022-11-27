@@ -1,12 +1,12 @@
 <template>
   <div v-if="aikus">
-    <Teleport to="#sort-target">
-      <SortDropdown @sort-dir="(dir) => sortSelected(dir)" />
-    </Teleport>
+    <!-- <Teleport to="#sort-target"> -->
+    <!--   <SortDropdown @sort-dir="(dir) => sortSelected(dir)" /> -->
+    <!-- </Teleport> -->
     <div class="mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 ">
       <AikuCard 
         v-for="aiku in aikusToRender" 
-        :key="aiku.id.toString()" 
+        :key="aiku.id" 
         :fields="{ aiku: aiku, collections: collections }" 
         @refetch-collections="getCollections()"
       />
@@ -26,8 +26,6 @@
 <script setup lang="ts">
 import { GetCollectionsByUserResp } from '~/server/api/users/collections/index.get'
 import { GetAikusByUserResp } from '~/server/api/users/aikus/index.get'
-
-const emits = defineEmits(["getCollections", "cursor"])
 
 const cursor = ref('')
 const nextPageCursor = ref('')
@@ -127,7 +125,7 @@ const pagePrev = () => {
 }
 
 const sortSelected = (sortDir:"asc" | "desc") => {
-  cursor.value = null 
+  cursor.value = '' 
   pageNum.value = 1 
   leadingPageNum.value = 1 
   orderDir.value = 'desc' 

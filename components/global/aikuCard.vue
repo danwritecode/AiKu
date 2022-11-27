@@ -134,7 +134,7 @@ const setManageCollection = async () => {
   await getAikuColMap()
 }
 
-const { data:aikuColMap, error:aikuColMapError, refresh:getAikuColMap, pending:aikuColMapPending } = await useFetch("/api/v2/aikus/:id/collections", {
+const { data:aikuColMap, refresh:getAikuColMap } = await useFetch("/api/v2/aikus/:id/collections", {
   key: props.fields.aiku.id + "_aikuColMap",
   immediate: false,
   query: {
@@ -169,14 +169,14 @@ const createCollection = async () => {
   }
   
   // if no error
-  collectionName.value = null
+  collectionName.value = ''
   useNoti("success", "Nice", "We created that collection for you")
 
   emit('refetchCollections')
 }
 
 
-const colIdMapLoading = ref<string>(null)
+const colIdMapLoading = ref('')
 
 const modifyCollectionMap = async (event:Event, collectionId:string) => {
   const el = event.target as HTMLInputElement
@@ -186,15 +186,19 @@ const modifyCollectionMap = async (event:Event, collectionId:string) => {
   if(el.checked) {
     await addColMap(collectionId)
     await getAikuColMap()
-    colIdMapLoading.value = null
+    colIdMapLoading.value = ''
     return
   }
 
   // if not checked, then we remove
-  const mapId = getMapId(props.fields.aiku.id, collectionId)
-  await removeColMap(mapId)
-  await getAikuColMap()
-  colIdMapLoading.value = null
+  try {
+    const mapId = getMapId(collectionId)
+    await removeColMap(mapId)
+    await getAikuColMap()
+    colIdMapLoading.value = ''
+  } catch (error) {
+    useNoti("error", "Uh oh", "An issue occured when trying to add the AiKu to the collection")   
+  }
 }
 
 const addColMap = async (collectionId:string) => {
@@ -237,11 +241,14 @@ const aikuIsInCollection = (collectionId:string) => {
   return false
 }
 
-const getMapId = (aikuId:string, collectionId:string):string => {
-  const mappings = aikuColMap.value.filter(m => m.collectionId === collectionId)
-  if(mappings.length > 0) {
-    return mappings[0].id
+const getMapId = (collectionId:string):string => {
+  if(aikuColMap.value) {
+    const mappings = aikuColMap.value.filter(m => m.collectionId === collectionId)
+    if(mappings.length > 0) {
+      return mappings[0].id
+    }
   }
+  throw "No Aiku Collection map found"
 }
 
 </script>
