@@ -3,27 +3,12 @@
     <Html :class="isDark ? 'dark':''" >
       <Body class="dark:bg-zinc-800 bg-zinc-100"></Body>
     </Html>
-    <!-- <nav class="lg:absolute top-2 left-2 flex items-center space-x-4 px-4 py-4 lg:px-0 lg:py-0"> -->
-    <!--   <button v-if="!haiku.showOverlay" @click="showNav = !showNav" class="inline-flex dark:text-zinc-500 text-zinc-500"> -->
-    <!--     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" :class="showNav ? 'rotate-180':''" class="w-6 h-6"> -->
-    <!--       <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /> -->
-    <!--     </svg> -->
-    <!--   </button>  -->
-    <!--   <div v-if="showNav && !haiku.showOverlay" class="flex items-center"> -->
-        <!-- <button @click="isDark = !isDark" type="button" class="dark:bg-zinc-600 bg-zinc-200 relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-violet-500 transition-hover-300" role="switch" aria-checked="false"> -->
-        <!--   <span class="sr-only">Use setting</span> -->
-        <!--   <span aria-hidden="true" :class="isDark ? 'translate-x-5 bg-violet-500':'translate-x-0 dark:bg-zinc-400 bg-zinc-100'" class="pointer-events-none inline-block h-5 w-5 transform rounded-full shadow ring-0 transition duration-200 ease-in-out"></span> -->
-        <!-- </button> -->
-    <!--   </div> -->
-    <!-- </nav> -->
 
     <nav class="border-b dark:border-zinc-600 border-zinc-200 dark:bg-zinc-800 bg-zinc-100">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-16 justify-between">
           <div class="flex">
             <div class="flex flex-shrink-0 items-center">
-              <!-- <img class="block h-8 w-auto lg:hidden" src="https://tailwindui.com/img/logos/mark.svg?color=violet&shade=600" alt="Your Company"> -->
-              <!-- <img class="hidden h-8 w-auto lg:block" src="https://tailwindui.com/img/logos/mark.svg?color=violet&shade=600" alt="Your Company"> -->
               <NuxtLink to="/" class="text-black dark:text-zinc-100 text-zinc-900">AiKu</NuxtLink>
             </div>
             <div class="hidden sm:-my-px sm:ml-16 sm:flex sm:space-x-8">
@@ -123,7 +108,7 @@
 <script setup lang="ts">
 import { useHaikuStore } from '~/stores/haiku'
 const user = useSupabaseUser()
-const client = useSupabaseClient()
+const client = useSupabaseAuthClient()
 
 const signOut = async () => {
   const { error } = await client.auth.signOut()

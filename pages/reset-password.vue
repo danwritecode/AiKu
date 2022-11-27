@@ -37,7 +37,7 @@
 <script setup lang="ts">
 
 const config = useRuntimeConfig()
-const client = useSupabaseClient()
+const client = useSupabaseAuthClient()
 
 const email = ref('')
 

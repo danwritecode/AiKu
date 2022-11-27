@@ -87,7 +87,7 @@
 
 <script setup lang="ts">
 
-const client = useSupabaseClient()
+const client = useSupabaseAuthClient()
 const user = useSupabaseUser()
 
 const email = ref('')

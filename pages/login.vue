@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 
-const client = useSupabaseClient()
+const client = useSupabaseAuthClient()
 
 const email = ref('')
 const password = ref('')
@@ -104,6 +104,8 @@ const signIn = async() => {
     email: email.value,
     password: password.value
   })
+
+  console.log(data)
 
   if(error) {
     useNoti("error", 'Uh oh', error.message)
