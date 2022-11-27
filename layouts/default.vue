@@ -115,6 +115,11 @@ const signOut = async () => {
 
   if(!error) {
     navigateTo("/") 
+
+    const accessToken = useCookie('sb-access-token')
+    const refreshToken = useCookie('sb-refresh-token')
+    accessToken.value = null
+    refreshToken.value = null
   }
 }
 

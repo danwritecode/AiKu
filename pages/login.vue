@@ -105,7 +105,12 @@ const signIn = async() => {
     password: password.value
   })
 
-  console.log(data)
+  if(data){
+    const accessToken = useCookie('sb-access-token')
+    const refreshToken = useCookie('sb-refresh-token')
+    accessToken.value = data.session?.access_token ?? null
+    refreshToken.value = data.session?.refresh_token ?? null
+  }
 
   if(error) {
     useNoti("error", 'Uh oh', error.message)
