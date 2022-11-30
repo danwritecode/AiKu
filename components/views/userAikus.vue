@@ -60,6 +60,7 @@ const aikusToRender = ref([])
 const { data: aikus, error } = await useAsyncData<GetAikusByUserResp>(
   Date.now().toString() + orderDir.value + cursor.value,
   () => $fetch('/api/users/aikus', {
+    key: cursor.value,  
     query: {
       cursor: cursor.value,
       orderDir: orderDir.value,
@@ -84,11 +85,14 @@ if(error.value) {
     3. Update the array of Aikus that should be currently rendered
 **/
 const onAikuLoad = () => {
-  aikusLoaded.value = aikusLoaded.value.concat(aikus.value.data)
-  // get the ID of the LAST item in the array
-  nextPageCursor.value = aikus.value.data[aikus.value.data.length - 1].id
-
-  aikusToRender.value = aikus.value.data
+  if(aikus.value) {
+    for (let aiku of aikus.value.data) {
+      aikusLoaded.value.push(aiku)
+    }
+    // get the ID of the LAST item in the array
+    nextPageCursor.value = aikus.value.data[aikus.value.data.length - 1].id
+    aikusToRender.value = aikus.value.data
+  }
 }
 
 if(aikus.value) {
@@ -143,7 +147,8 @@ const sliceRenderedAikus = () => {
   const sliceEnd = (pageNum.value * pageSize.value)
 
   // we need to slice from the loaded aikus
-  aikusToRender.value = aikusLoaded.value.slice(sliceStart, sliceEnd)
+  // have to .reverse(), can't figure out why
+  aikusToRender.value = aikusLoaded.value.slice(sliceStart, sliceEnd).reverse()
 }
 
 
