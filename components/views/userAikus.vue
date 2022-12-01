@@ -3,12 +3,13 @@
     <!-- <Teleport to="#sort-target"> -->
     <!--   <SortDropdown @sort-dir="(dir) => sortSelected(dir)" /> -->
     <!-- </Teleport> -->
-    <div class="mt-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 ">
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 ">
       <AikuCard 
         v-for="aiku in aikusToRender" 
         :key="aiku.id" 
-        :fields="{ aiku: aiku, collections: collections }" 
-        @refetch-collections="getCollections()"
+        :aiku="aiku"
+        :collections="collections"
+        @refetch-collections="$emit('refetch-collections')"
       />
     </div>
     <Pagination
@@ -26,6 +27,13 @@
 <script setup lang="ts">
 import { GetCollectionsByUserResp } from '~/server/api/users/collections/index.get'
 import { GetAikusByUserResp } from '~/server/api/users/aikus/index.get'
+
+const emits = defineEmits(["refetch-collections"])
+
+type userAikusProps = {
+  collections: GetCollectionsByUserResp | null
+}
+defineProps<userAikusProps>()
 
 const cursor = ref('')
 const nextPageCursor = ref('')
@@ -60,14 +68,14 @@ const aikusToRender = ref([])
 const { data: aikus, error } = await useAsyncData<GetAikusByUserResp>(
   Date.now().toString() + orderDir.value + cursor.value,
   () => $fetch('/api/users/aikus', {
-    key: cursor.value,  
+    key: cursor.value,
     query: {
       cursor: cursor.value,
       orderDir: orderDir.value,
       pageNum: pageNum.value,
       pageSize: pageSize.value
     },
-    headers: useRequestHeaders(['cookie']),
+    headers: useRequestHeaders(['cookie']) as Record<string,string>
   }),
   { watch: [orderDir, leadingPageNum] },
 );
@@ -149,20 +157,5 @@ const sliceRenderedAikus = () => {
   // we need to slice from the loaded aikus
   // have to .reverse(), can't figure out why
   aikusToRender.value = aikusLoaded.value.slice(sliceStart, sliceEnd).reverse()
-}
-
-
-// Collections
-const { data:collections, error:collectionsError, refresh:getCollections } = await useFetch<GetCollectionsByUserResp>("/api/users/collections", {
-  key: "collections",
-  method: "GET",
-  query: {
-    orderDir: "desc"
-  },
-  headers: useRequestHeaders(['cookie']),
-})
-
-if(collectionsError.value) {
-  console.log(collectionsError.value)
 }
 </script>

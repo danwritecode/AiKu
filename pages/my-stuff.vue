@@ -27,7 +27,7 @@
         </div>
 
         <div class="px-6 py-3 text-center text-sm font-medium">
-          <!-- <span class="dark:text-zinc-100 text-zinc-900">{{ collections.meta.totalCount }}</span> -->
+          <span class="dark:text-zinc-100 text-zinc-900">{{ collections.meta.totalCount }}</span>
           <span class="dark:text-zinc-300 text-zinc-600"> Collections</span>
         </div>
       </div>
@@ -56,20 +56,52 @@
       <!-- <div id="sort-target"></div> -->
     </div>
 
-    <div v-if="pageShowing === 'aikus'">
-      <ViewsUserAikus />
-    </div>
+    <Transition name="fade" mode="out-in">
+      <div v-if="pageShowing === 'aikus'" key="aiku">
+        <ViewsUserAikus :collections="collections" @refetch-collections="getCollections()" />
+      </div>
+      <div v-else="pageShowing === 'collections'" key="collection">
+        <ViewsUserCollections :collections="collections" />
+      </div>
+    </Transition>
 
   </div>
 </template>
 
 
 <script setup lang="ts">
+import { GetCollectionsByUserResp } from '~/server/api/users/collections/index.get'
+
 definePageMeta({
   middleware: 'auth'
 })
 
-const pageShowing = ref<"aikus" | "collections">("aikus")
+const pageShowing = ref<"aikus" | "collections">("collections")
 
 const user = useSupabaseUser()
+
+const { data:collections, error:collectionsError, refresh:getCollections } = await useFetch("/api/users/collections", {
+  key: "collections",
+  method: "GET",
+  query: {
+    orderDir: "desc"
+  },
+  headers: useRequestHeaders(['cookie']) as Record<string,string>
+})
+
+if(collectionsError.value) {
+  console.log(collectionsError.value)
+}
 </script>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

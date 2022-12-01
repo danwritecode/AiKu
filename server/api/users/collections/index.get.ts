@@ -2,12 +2,12 @@ import { useValidatedQuery, z } from 'h3-zod';
 import { PrismaClient } from '@prisma/client'
 import { serverSupabaseUser } from '#supabase/server'
 import { User } from '@supabase/supabase-js';
-import { collection } from '~/prisma/client'
+import { collection, aikuCollectionMap, aiku } from '~/prisma/client'
 
 const prisma = new PrismaClient()
 
 export type GetCollectionsByUserResp = {
-  data: collection[],
+  data: Collection[],
   meta: Meta
 }
 
@@ -19,6 +19,15 @@ type Query = {
   orderDir?: "asc" | "desc",
 }
 
+export type Collection = collection & {
+  aikuCollectionMap: AikuCollectionMap[];
+}
+
+type AikuCollectionMap = aikuCollectionMap & {
+  aiku: aiku;
+}
+
+
 /**
   * This endpoint returns all Collections for an Authenticated User
 **/
@@ -27,7 +36,6 @@ export default defineEventHandler(async (event):Promise<GetCollectionsByUserResp
   if (!user) {
     throw createError({ statusCode: 401, message: 'Unauthorized' })
   }
-
   const query:Query = useValidatedQuery(event, z.object({
     orderDir: z.enum(["asc", "desc"]),
   }))
@@ -43,7 +51,7 @@ export default defineEventHandler(async (event):Promise<GetCollectionsByUserResp
   }
 })
 
-const getCollectionsAsync = async(query:Query, user:User):Promise<collection[]> => {
+const getCollectionsAsync = async(query:Query, user:User):Promise<Collection[]> => {
   return await prisma.collection.findMany({
     orderBy: [
       {
@@ -52,6 +60,13 @@ const getCollectionsAsync = async(query:Query, user:User):Promise<collection[]> 
     ],
     where: {
       userId: user.id
+    },
+    include: {
+      aikuCollectionMap: {
+        include: {
+          aiku: true
+        }
+      }
     }
   }) 
 }
