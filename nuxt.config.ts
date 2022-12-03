@@ -12,5 +12,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     '@nuxtjs/supabase'
-  ]
+  ],
+  imports: {
+    dir: ["stores"]
+  }
 })

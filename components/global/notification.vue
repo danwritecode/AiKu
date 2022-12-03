@@ -45,6 +45,7 @@
 
 <script setup lang="ts">
 import { useNotificationStore } from '~/stores/notification'
+
 const store = useNotificationStore()
 const closeNoti = () => {
   store.showNoti = false

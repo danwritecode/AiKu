@@ -92,7 +92,7 @@
         </div>
       </div>
     </transition>
-    <div>
+    <div v-if="props.allowManage">
       <button v-if="!showManageCollection" @click="setManageCollection()" type="button" class="z-20 absolute top-2 right-2 bg-zinc-900/75 rounded-full text-zinc-400 hover:text-white transition-hover-300">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
@@ -120,7 +120,8 @@
 // temp setting these to any
 type CardProps = {
   aiku: any,
-  collections?: any
+  collections?: any,
+  allowManage?:boolean
 }
 const props = defineProps<CardProps>()
 

@@ -9,6 +9,7 @@
         :key="aiku.id" 
         :aiku="aiku"
         :collections="collections"
+        :allow-manage="true"
         @refetch-collections="$emit('refetch-collections')"
       />
     </div>
