@@ -11,14 +11,16 @@
     <div class="mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 ">
       <AikuCard v-for="aikuCol in collection.collection.aikuCollectionMap" :key="aikuCol.id" :allow-manage="false" :aiku="aikuCol.aiku" />
     </div>
+
+    <SidePanel v-if="showManagePanel" :animate="animateManagePanel" panel-title="Manage Collection" @close="closeManagePanel()">
+      <PanelsManageCollection :aiku-col-map="collection.collection.aikuCollectionMap" :collection-name="collection.collection.name"/> 
+    </SidePanel>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { GetUserCollectionByIdResp } from "../../server/api/users/collections/[id].get"
-import { useSidePanelStore } from '~/stores/sidePanel'
-
-const store = useSidePanelStore()
 
 const route = useRoute()
 
@@ -40,16 +42,21 @@ const pageHeadingSvg = `
   </svg>
 `
 
+
+const showManagePanel = ref(false)
+const animateManagePanel = ref(false)
+
 const openManagePanel = () => {
-  const props = {
-    aikuColMap: collection.value.collection.aikuCollectionMap,
-    collectionName: collection.value.collection.name
-  }
-  usePanel(
-    "show", 
-    "Manage Collection", 
-    "manageCollection",
-    props
-  )
+  showManagePanel.value = true
+  setTimeout(() => {
+    animateManagePanel.value = true
+  }, 1);
+}
+
+const closeManagePanel = () => {
+  animateManagePanel.value = false
+  setTimeout(() => {
+    showManagePanel.value = false
+  }, 500);
 }
 </script>

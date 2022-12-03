@@ -23,7 +23,7 @@
 <script setup lang="ts">
 
 type ManageCollectionProps = {
-  aikuColMap: []
+  aikuColMap: any
   collectionName: string
 }
 

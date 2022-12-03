@@ -3,7 +3,6 @@
     <NuxtLayout>
       <NuxtPage />
       <Notification />
-      <SidePanel />
     </NuxtLayout>
   </div>
 </template>
