@@ -13,10 +13,12 @@
     </div>
 
     <SidePanel v-if="showManagePanel" :animate="animateManagePanel" panel-title="Manage Collection" @close="closeManagePanel()">
-      <PanelsManageCollection :aiku-col-map="collection.collection.aikuCollectionMap" :collection-name="collection.collection.name"/> 
+      <PanelsManageCollection :aikus="aikus!" :collection-name="collection.collection.name"/> 
     </SidePanel>
-
   </div>
+
+  <ErrorFallback v-else />
+
 </template>
 
 <script setup lang="ts">
@@ -32,6 +34,10 @@ const { data:collection, error:collectionError } = await useFetch<GetUserCollect
   headers: useRequestHeaders(['cookie']) as Record<string, string>
 })
 
+const aikus = computed(() => {
+  return collection.value ? collection.value.collection.aikuCollectionMap.map(a => a.aiku):undefined
+}) 
+
 if (collectionError.value) {
   useNoti("error", "Uh oh", "There was an issue getting that collection")
 }
@@ -41,7 +47,6 @@ const pageHeadingSvg = `
     <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
   </svg>
 `
-
 
 const showManagePanel = ref(false)
 const animateManagePanel = ref(false)

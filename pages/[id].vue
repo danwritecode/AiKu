@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center px-4 py-4 lg:py-16 w-full h-[80vh] lg:h-screen">
+  <div v-if="aiku" class="flex items-center justify-center px-4 py-4 lg:py-16 w-full h-[80vh] lg:h-screen">
     <div class="relative h-full w-full max-w-2xl">
       <img :src="config.strapiBase + aiku.data.attributes.image.data.attributes.url" alt="" class="absolute inset-0 h-full w-full object-cover rounded-lg">
       <div class="absolute bottom-4 left-4 bg-black/50 p-4 rounded-lg">

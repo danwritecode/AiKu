@@ -1,7 +1,7 @@
 <template>
   <div v-if="user" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
     <div class="overflow-hidden rounded-lg dark:border dark:border-zinc-700 dark:bg-zinc-800 bg-zinc-50 shadow">
-      <h2 class="sr-only" id="profile-overview-title">Profile Overview</h2>
+      <h2 class="sr-only" id="profile-overview-title">My Stuff</h2>
       <div class="dark:bg-zinc-800 bg-zinc-50 px-4 py-3">
         <div class="sm:flex sm:items-center sm:justify-between">
           <div class="sm:flex sm:space-x-5">

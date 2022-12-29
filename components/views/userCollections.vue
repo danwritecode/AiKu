@@ -12,7 +12,7 @@
 import { GetCollectionsByUserResp } from '~/server/api/users/collections/index.get'
 
 type userCollectionProps = {
-  collections: GetCollectionsByUserResp | null
+  collections: GetCollectionsByUserResp
 }
 const props = defineProps<userCollectionProps>()
 

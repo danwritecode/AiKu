@@ -24,10 +24,10 @@
             leave-to-class="translate-x-full"
           >
             <div v-if="animate" class="pointer-events-auto w-screen max-w-2xl">
-              <div class="flex h-full flex-col overflow-y-scroll dark:bg-zinc-900 bg-zinc-100 py-6 shadow-xl">
+              <div class="flex h-full flex-col dark:bg-zinc-900 bg-zinc-100 pt-6 shadow-xl">
                 <div class="px-4 sm:px-6">
                   <div class="flex items-start justify-between">
-                    <h2 class="text-lg font-medium dark:text-zinc-200 text-zinc-800" id="slide-over-title">Testing</h2>
+                    <h2 class="text-lg font-medium dark:text-zinc-200 text-zinc-800" id="slide-over-title">{{ panelTitle }}</h2>
                     <div class="ml-3 flex h-7 items-center">
                       <button @click="$emit('close')" type="button" class="rounded-md text-zinc-400 hover:text-zinc-500 focus:outline-none transition-hover-300">
                         <span class="sr-only">Close panel</span>
@@ -39,9 +39,7 @@
                   </div>
                 </div>
                 <div class="relative mt-6 flex-1 px-4 sm:px-6">
-                  <div class="absolute inset-0 px-4 sm:px-6">
-                    <slot />
-                  </div>
+                  <slot />
                 </div>
               </div>
             </div>

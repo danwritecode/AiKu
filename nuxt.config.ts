@@ -14,6 +14,6 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase'
   ],
   imports: {
-    dir: ["stores"]
+    dirs: ["stores", "prisma"]
   }
 })

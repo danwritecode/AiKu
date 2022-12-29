@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div>
     <Html :class="isDark ? 'dark':''" >
       <Body class="dark:bg-zinc-800 bg-zinc-100"></Body>
     </Html>

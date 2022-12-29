@@ -36,6 +36,8 @@ import { PropType } from 'vue'
 
 type ButtonSizes = "xs" | "sm" | "md" | "lg" | "xl"
 
+defineEmits(["submit"])
+
 const props = defineProps({
   submitText: {
     type: String,

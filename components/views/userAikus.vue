@@ -26,6 +26,7 @@
 
 
 <script setup lang="ts">
+import type { aiku } from '@prisma/client'
 import { GetCollectionsByUserResp } from '~/server/api/users/collections/index.get'
 import { GetAikusByUserResp } from '~/server/api/users/aikus/index.get'
 
@@ -62,9 +63,9 @@ const isLastPage = computed(() => {
   That way on previous navigations, we don't have to hit
   our DB again.
 */
-const aikusLoaded = ref([])
+const aikusLoaded = ref<aiku[]>([])
 // this will hold all aikus that should be visible in the frame
-const aikusToRender = ref([])
+const aikusToRender = ref<aiku[]>([])
 
 const { data: aikus, error } = await useAsyncData<GetAikusByUserResp>(
   Date.now().toString() + orderDir.value + cursor.value,
@@ -158,5 +159,22 @@ const sliceRenderedAikus = () => {
   // we need to slice from the loaded aikus
   // have to .reverse(), can't figure out why
   aikusToRender.value = aikusLoaded.value.slice(sliceStart, sliceEnd).reverse()
+}
+
+const showManagePanel = ref(false)
+const animateManagePanel = ref(false)
+
+const openManagePanel = () => {
+  showManagePanel.value = true
+  setTimeout(() => {
+    animateManagePanel.value = true
+  }, 1);
+}
+
+const closeManagePanel = () => {
+  animateManagePanel.value = false
+  setTimeout(() => {
+    showManagePanel.value = false
+  }, 500);
 }
 </script>
