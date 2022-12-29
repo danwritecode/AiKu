@@ -14,12 +14,14 @@ export default defineEventHandler(async (event) => {
   }
 
   const body = await useValidatedBody(event, z.object({
-    mapId: z.string(),
+    mapIds: z.string().array(),
   }))
-  
-  await prisma.aikuCollectionMap.delete({
+
+  await prisma.aikuCollectionMap.deleteMany({
     where: {
-      id: body.mapId
+      id: {
+        in: body.mapIds
+      }
     }
   })
 

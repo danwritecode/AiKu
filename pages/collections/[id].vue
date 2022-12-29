@@ -13,7 +13,7 @@
     </div>
 
     <SidePanel v-if="showManagePanel" :animate="animateManagePanel" panel-title="Manage Collection" @close="closeManagePanel()">
-      <PanelsManageCollection :aikus="aikus!" :collection-name="collection.collection.name"/> 
+      <PanelsManageCollection :collection="collection.collection" :collection-name="collection.collection.name"/> 
     </SidePanel>
   </div>
 
