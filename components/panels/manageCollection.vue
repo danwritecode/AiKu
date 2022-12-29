@@ -34,7 +34,7 @@
     <div class="absolute bottom-0 left-0 w-full border-t dark:border-zinc-700 border-zinc-300">
       <div class="flex flex-shrink-0 justify-end px-4 py-4">
         <button type="button" class="rounded-md border border-zinc-300 dark:bg-transparent bg-white py-2 px-4 text-sm font-medium dark:text-zinc-300 text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-hover-300">cancel</button>
-        <SubmitButton @submit="saveChanges()" :submit-text="aikusToRemove.size > 0 ? `save & remove ${aikusToRemove.size} AiKu(s)`:'save'" size="sm" color="violet" :submit-loading="false" :is-valid-state="true" class="ml-4"/>
+        <SubmitButton @submit="saveChanges()" :submit-text="aikusToRemove.size > 0 ? `save & remove ${aikusToRemove.size} AiKu(s)`:'save'" size="sm" color="violet" :submit-loading="saveLoading" :is-valid-state="aikusToRemove.size > 0" class="ml-4"/>
       </div>
     </div>
 
@@ -42,7 +42,6 @@
 </template>
 
 <script setup lang="ts">
-import type { aiku } from '@prisma/client'
 import { Collection } from "../../server/api/users/collections/[id].get"
 
 type ManageCollectionProps = {
@@ -51,7 +50,7 @@ type ManageCollectionProps = {
 }
 
 const props = defineProps<ManageCollectionProps>()
-const emits = defineEmits()
+const emits = defineEmits(["refetch-collection"])
 
 const aikusToRemove = ref<Set<string>>(new Set([]))
 const aikusToRemoveList = computed(() => {
@@ -62,8 +61,14 @@ const aikusToRemoveList = computed(() => {
   return aikus
 })
 
+const saveLoading = ref(false)
+
 const saveChanges = async () => {
+  saveLoading.value = true
   await removeAikus()
+
+  emits("refetch-collection")
+  saveLoading.value = false
 }
 
 const removeAikus = async () => {
@@ -75,10 +80,10 @@ const removeAikus = async () => {
     }
   })
 
-  console.log(error.value)
-
   if (error.value) {
+    console.log(error.value)
     useNoti("error", "Uh oh", "There was an issue removing those AiKus from the collection")
+    return;
   }
 }
 </script>

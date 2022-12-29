@@ -3,7 +3,7 @@
     <div class="px-2 pt-1 pb-2">
       <p class="dark:text-zinc-300 text-zinc-800">{{ collection.name }}</p>
       <div :class="determineGridSize(collection)" class="mt-1 grid gap-2">
-        <img v-for="aiku in collection.aikuCollectionMap" :class="determineImageHeight(collection)" class="rounded-lg object-cover w-full" :src="aiku.aiku.sdUrl" alt="">
+        <img v-for="aiku in collection.aikuCollectionMap.slice(0,4)" :class="determineImageHeight(collection)" class="rounded-lg object-cover w-full" :src="aiku.aiku.sdUrl" alt="">
       </div>
     </div>
     <div>

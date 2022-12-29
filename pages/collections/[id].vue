@@ -13,7 +13,7 @@
     </div>
 
     <SidePanel v-if="showManagePanel" :animate="animateManagePanel" panel-title="Manage Collection" @close="closeManagePanel()">
-      <PanelsManageCollection :collection="collection.collection" :collection-name="collection.collection.name"/> 
+      <PanelsManageCollection :collection="collection.collection" :collection-name="collection.collection.name" @refetch-collection="refreshCollection()"/> 
     </SidePanel>
   </div>
 
@@ -24,13 +24,17 @@
 <script setup lang="ts">
 import { GetUserCollectionByIdResp } from "../../server/api/users/collections/[id].get"
 
+definePageMeta({
+  middleware: 'auth'
+})
+
 const route = useRoute()
 
 const colId = route.params.id
 
-const { data:collection, error:collectionError } = await useFetch<GetUserCollectionByIdResp>("/api/users/collections/" + colId, {
+const { data:collection, error:collectionError, refresh: refreshCollection } = await useFetch<GetUserCollectionByIdResp>("/api/users/collections/" + colId, {
   method: "GET",
-  key: colId.toString(),
+  key: Date().toString(),
   headers: useRequestHeaders(['cookie']) as Record<string, string>
 })
 
