@@ -13,27 +13,27 @@
     <div>
       <h6 class="block text-base font-medium dark:text-zinc-100 text-zinc-900 sm:mt-px sm:pt-2">Remove AiKus</h6>    
       <p class="text-sm text-zinc-500">Remove AiKus from the collection. Removing does not delete the AiKu.</p>
-      <div class="mt-3 grid grid-cols-5 gap-4">
-        <div v-for="map in collection.aikuCollectionMap" :key="map.id" class="relative group">
-          <button v-if="!aikusToRemove.has(map.id)" @click="aikusToRemove.add(map.id)" class="z-10 absolute top-0 right-2 text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
-            </svg>
-          </button> 
-          <button v-else @click="aikusToRemove.delete(map.id)" class="z-10 absolute top-0 right-2 text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-            </svg>
-          </button> 
-          <img :src="map.aiku.sdUrl" :alt="map.aiku.lineOne" class="inset-0 rounded-lg">
-          <div :class="aikusToRemove.has(map.id) ? 'bg-zinc-900/75':''" class="absolute inset-0 group-hover:bg-zinc-900/75 transition-hover-300"></div>
-        </div>
-      </div>
+        <transition-group name="list" tag="div" class="mt-3 grid grid-cols-5 gap-4">
+          <div v-for="map in collection.aikuCollectionMap" :key="map.id" class="relative group">
+            <button v-if="!aikusToRemove.has(map.id)" @click="aikusToRemove.add(map.id)" class="z-10 absolute top-0 right-2 text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
+              </svg>
+            </button> 
+            <button v-else @click="aikusToRemove.delete(map.id)" class="z-10 absolute top-0 right-2 text-white">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+              </svg>
+            </button> 
+            <img :src="map.aiku.sdUrl" :alt="map.aiku.lineOne" class="inset-0 rounded-lg">
+            <div :class="aikusToRemove.has(map.id) ? 'bg-zinc-900/75':''" class="absolute inset-0 group-hover:bg-zinc-900/75 transition-hover-300"></div>
+          </div>
+        </transition-group>
     </div>
 
     <div class="absolute bottom-0 left-0 w-full border-t dark:border-zinc-700 border-zinc-300">
       <div class="flex flex-shrink-0 justify-end px-4 py-4">
-        <button type="button" class="rounded-md border border-zinc-300 dark:bg-transparent bg-white py-2 px-4 text-sm font-medium dark:text-zinc-300 text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-hover-300">cancel</button>
+        <button @click="emits('close')" type="button" class="rounded-md border border-zinc-300 dark:bg-transparent bg-white py-2 px-4 text-sm font-medium dark:text-zinc-300 text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-transparent focus:ring-offset-2 transition-hover-300">cancel</button>
         <SubmitButton @submit="saveChanges()" :submit-text="aikusToRemove.size > 0 ? `save & remove ${aikusToRemove.size} AiKu(s)`:'save'" size="sm" color="violet" :submit-loading="saveLoading" :is-valid-state="aikusToRemove.size > 0" class="ml-4"/>
       </div>
     </div>
@@ -50,7 +50,7 @@ type ManageCollectionProps = {
 }
 
 const props = defineProps<ManageCollectionProps>()
-const emits = defineEmits(["refetch-collection"])
+const emits = defineEmits(["refetch-collection", "close"])
 
 const aikusToRemove = ref<Set<string>>(new Set([]))
 const aikusToRemoveList = computed(() => {
@@ -83,7 +83,22 @@ const removeAikus = async () => {
   if (error.value) {
     console.log(error.value)
     useNoti("error", "Uh oh", "There was an issue removing those AiKus from the collection")
+    emits("close")
     return;
   }
+
+  aikusToRemove.value.clear()
 }
 </script>
+
+<style>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(-15px);
+}
+</style>

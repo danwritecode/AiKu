@@ -13,11 +13,11 @@
     </div>
 
     <SidePanel v-if="showManagePanel" :animate="animateManagePanel" panel-title="Manage Collection" @close="closeManagePanel()">
-      <PanelsManageCollection :collection="collection.collection" :collection-name="collection.collection.name" @refetch-collection="refreshCollection()"/> 
+      <PanelsManageCollection :collection="collection.collection" :collection-name="collection.collection.name" @refetch-collection="refreshCollection()" @close="closeManagePanel()" /> 
     </SidePanel>
   </div>
 
-  <ErrorFallback v-else />
+  <ErrorFallback v-if="collectionError" />
 
 </template>
 
