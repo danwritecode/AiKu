@@ -6,7 +6,7 @@
         <label for="collection-name" class="block text-sm font-medium dark:text-zinc-100 text-zinc-900 sm:mt-px sm:pt-2">Collection Name</label>
       </div>
       <div class="sm:col-span-2">
-        <input :value="collectionName" type="text" name="project-name" id="project-name" class="block w-full rounded-md dark:bg-zinc-900 dark:text-zinc-200 border-zinc-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm transition-hover-300">
+        <input v-model="newCollectionName" type="text" name="project-name" id="project-name" class="block w-full rounded-md dark:bg-zinc-900 dark:text-zinc-200 border-zinc-300 shadow-sm focus:border-violet-500 focus:ring-violet-500 sm:text-sm transition-hover-300">
       </div>
     </div>
 
@@ -34,7 +34,7 @@
     <div class="absolute bottom-0 left-0 w-full border-t dark:border-zinc-700 border-zinc-300">
       <div class="flex flex-shrink-0 justify-end px-4 py-4">
         <button @click="emits('close')" type="button" class="rounded-md border border-zinc-300 dark:bg-transparent bg-white py-2 px-4 text-sm font-medium dark:text-zinc-300 text-zinc-700 shadow-sm hover:bg-zinc-50 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-transparent focus:ring-offset-2 transition-hover-300">cancel</button>
-        <SubmitButton @submit="saveChanges()" :submit-text="aikusToRemove.size > 0 ? `save & remove ${aikusToRemove.size} AiKu(s)`:'save'" size="sm" color="violet" :submit-loading="saveLoading" :is-valid-state="aikusToRemove.size > 0" class="ml-4"/>
+        <SubmitButton @submit="saveChanges()" :submit-text="aikusToRemove.size > 0 ? `save & remove ${aikusToRemove.size} AiKu(s)`:'save'" size="sm" color="violet" :submit-loading="saveLoading" :is-valid-state="aikusToRemove.size > 0 || newCollectionName !== ''" class="ml-4"/>
       </div>
     </div>
 
@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import type { collection } from "@prisma/client"
 import { Collection } from "../../server/api/users/collections/[id].get"
 
 type ManageCollectionProps = {
@@ -51,6 +52,9 @@ type ManageCollectionProps = {
 
 const props = defineProps<ManageCollectionProps>()
 const emits = defineEmits(["refetch-collection", "close"])
+
+const newCollectionName = ref('')
+newCollectionName.value = props.collectionName
 
 const aikusToRemove = ref<Set<string>>(new Set([]))
 const aikusToRemoveList = computed(() => {
@@ -66,9 +70,29 @@ const saveLoading = ref(false)
 const saveChanges = async () => {
   saveLoading.value = true
   await removeAikus()
+  await updateAttributes()
 
   emits("refetch-collection")
   saveLoading.value = false
+}
+
+const updateAttributes = async () => {
+  const { error } = await useFetch('/api/users/collections', {
+    method: 'PUT',
+    body: {
+      id: props.collection.id,
+      createdAt: props.collection.createdAt,
+      userId: props.collection.userId,
+      name: newCollectionName,
+    }
+  })
+
+  if (error.value) {
+    console.log(error.value)
+    useNoti("error", "Uh oh", "There was an issue updating collection attributes")
+    emits("close")
+    return;
+  }
 }
 
 const removeAikus = async () => {

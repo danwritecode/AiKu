@@ -68,4 +68,8 @@ const closeManagePanel = () => {
     showManagePanel.value = false
   }, 500);
 }
+
+if (route.query.edit) {
+  openManagePanel()
+}
 </script>
