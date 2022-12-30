@@ -44,8 +44,8 @@
                 leave-to-class="transform opacity-0 scale-95" 
               >
                 <div v-if="showProfileDropdown" class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md dark:bg-zinc-800 bg-zinc-100 py-1 shadow-lg ring-1 dark:ring-zinc-600 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1">
-                  <a href="#" class="block px-4 py-2 text-sm dark:text-zinc-300 text-zinc-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</a>
-                  <a href="#" class="block px-4 py-2 text-sm dark:text-zinc-300 text-zinc-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</a>
+                  <NuxtLink @click="showProfileDropdown = false" to="/" class="block px-4 py-2 text-sm dark:text-zinc-300 text-zinc-700" role="menuitem" tabindex="-1" id="user-menu-item-0">Your Profile</NuxtLink>
+                  <NuxtLink @click="showProfileDropdown = false" to="/settings" class="block px-4 py-2 text-sm dark:text-zinc-300 text-zinc-700" role="menuitem" tabindex="-1" id="user-menu-item-1">Settings</NuxtLink>
                   <button @click="signOut(), showProfileDropdown = false" type="button" class="block px-4 py-2 text-sm dark:text-zinc-300 text-zinc-700" role="menuitem" tabindex="-1" id="user-menu-item-2">Sign out</button>
                 </div>
               </transition>
