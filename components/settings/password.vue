@@ -12,12 +12,12 @@
             <div class="mt-6 grid grid-cols-4 gap-6">
               <div class="col-span-4 sm:col-span-2">
                 <label for="first-name" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">First name</label>
-                <input type="text" name="first-name" id="first-name" class="mt-1 block w-full dark:bg-zinc-800 rounded-md border dark:border-zinc-500 border-zinc-300 py-2 px-3 shadow-sm focus:border-violet-600 focus:outline-none focus:ring-violet-900 sm:text-sm transition-hover-300">
+                <input type="text" name="first-name" id="first-name" class="mt-1 block w-full dark:bg-zinc-800 rounded-md border dark:border-zinc-500 border-zinc-300 py-2 px-3 shadow-sm dark:focus:border-violet-600 focus:border-violet-600 focus:outline-none focus:ring-violet-900 sm:text-sm transition-hover-300">
               </div>
 
               <div class="col-span-4 sm:col-span-2">
                 <label for="last-name" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">Last name</label>
-                <input type="text" name="last-name" id="last-name" class="mt-1 block w-full dark:bg-zinc-800 rounded-md border dark:border-zinc-500 border-zinc-300 py-2 px-3 shadow-sm focus:border-violet-600 focus:outline-none focus:ring-violet-900 sm:text-sm transition-hover-300">
+                <input type="text" name="last-name" id="last-name" class="mt-1 block w-full dark:bg-zinc-800 rounded-md border dark:border-zinc-500 border-zinc-300 py-2 px-3 shadow-sm dark:focus:border-violet-600 focus:border-violet-600 focus:outline-none focus:ring-violet-900 sm:text-sm transition-hover-300">
               </div>
             </div>
           </div>
