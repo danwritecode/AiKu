@@ -73,7 +73,7 @@
               </div>
 
               <div>
-                <NuxtLink to="/reset-password" class="text-sm font-medium dark:text-violet-500 text-violet-600 hover:text-violet-500">Forgot your password?</NuxtLink>
+                <NuxtLink to="/password-reset" class="text-sm font-medium dark:text-violet-500 text-violet-600 hover:text-violet-500">Forgot your password?</NuxtLink>
                 <button type="submit" class="mt-2 flex w-full justify-center rounded-md border border-transparent bg-violet-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-hover-300">Sign in</button>
                 <div v-if="!email && !password" class="mt-6">
                   <p class="text-sm font-medium dark:text-violet-500 text-violet-600 hover:text-violet-500">Need an account?</p>

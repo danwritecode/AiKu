@@ -43,8 +43,5 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const user = useSupabaseUser()
-
 const settingsSelection = ref<"profile" | "account" | "password">("profile")
-
 </script>
