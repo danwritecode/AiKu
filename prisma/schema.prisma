@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../prisma/client"
 }
 
 datasource db {
@@ -8,15 +9,16 @@ datasource db {
 }
 
 model aiku {
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  lineOne   String
-  lineTwo   String
-  lineThree String
-  presetId  Int?     @db.SmallInt
-  userId    String   @db.Uuid
-  sdUrl     String   @db.VarChar
-  id        String   @id @db.Uuid
-  preset    preset?  @relation(fields: [presetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  createdAt         DateTime            @default(now()) @db.Timestamptz(6)
+  lineOne           String
+  lineTwo           String
+  lineThree         String
+  presetId          Int?                @db.SmallInt
+  userId            String              @db.Uuid
+  sdUrl             String              @db.VarChar
+  id                String              @id @db.Uuid
+  preset            preset?             @relation(fields: [presetId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  aikuCollectionMap aikuCollectionMap[]
 }
 
 model preset {
@@ -25,4 +27,20 @@ model preset {
   value     String?
   isDefault Boolean
   aiku      aiku[]
+}
+
+model aikuCollectionMap {
+  id           String     @id @db.Uuid
+  aikuId       String     @db.Uuid
+  collectionId String     @db.Uuid
+  aiku         aiku       @relation(fields: [aikuId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  collection   collection @relation(fields: [collectionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model collection {
+  id                String              @id @db.Uuid
+  createdAt         DateTime            @default(now()) @db.Timestamptz(6)
+  userId            String              @db.Uuid
+  name              String
+  aikuCollectionMap aikuCollectionMap[]
 }

@@ -53,11 +53,7 @@
           </div>
 
           <div class="mt-6">
-            <form
-              @submit.prevent="signIn()"
-              @keyup.enter.prevent="signIn()"
-              class="space-y-6"
-            >
+            <form class="space-y-6" @keyup.prevent.enter="signIn()">
               <div>
                 <label for="email" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">Email address</label>
                 <div class="mt-1">
@@ -73,8 +69,8 @@
               </div>
 
               <div>
-                <NuxtLink to="/reset-password" class="text-sm font-medium dark:text-violet-500 text-violet-600 hover:text-violet-500">Forgot your password?</NuxtLink>
-                <button type="submit" class="mt-2 flex w-full justify-center rounded-md border border-transparent bg-violet-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-hover-300">Sign in</button>
+                <NuxtLink to="/password-reset" class="text-sm font-medium dark:text-violet-500 text-violet-600 hover:text-violet-500">Forgot your password?</NuxtLink>
+                <SubmitButton @submit="signIn()" submit-text="Sign in" size="md" color="violet" :submit-loading="signInLoading" :is-valid-state="email !== '' && password !== ''" class="mt-1.5"/>
                 <div v-if="!email && !password" class="mt-6">
                   <p class="text-sm font-medium dark:text-violet-500 text-violet-600 hover:text-violet-500">Need an account?</p>
                   <NuxtLink to="/signup" class="mt-2 flex w-full justify-center rounded-md border border-transparent bg-violet-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-hover-300">Sign up</NuxtLink>
@@ -92,24 +88,35 @@
 </template>
 
 <script setup lang="ts">
-import { NotificationType } from "~/stores/notification"
 
-const client = useSupabaseClient()
+const client = useSupabaseAuthClient()
 
 const email = ref('')
 const password = ref('')
 
+const signInLoading = ref(false)
 
 const signIn = async() => {
+  signInLoading.value = true
   const { data, error } = await client.auth.signInWithPassword({
     email: email.value,
     password: password.value
   })
 
+  signInLoading.value = false
+
+  if(data){
+    const accessToken = useCookie('sb-access-token')
+    const refreshToken = useCookie('sb-refresh-token')
+    accessToken.value = data.session?.access_token ?? null
+    refreshToken.value = data.session?.refresh_token ?? null
+  }
+
   if(error) {
-    useNoti(NotificationType.error, 'Uh oh', error.message)
+    useNoti("error", 'Uh oh', error.message)
     return
   }
+
   navigateTo("/browse")
 }
 </script>

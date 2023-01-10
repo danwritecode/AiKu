@@ -1,13 +1,13 @@
 <template>
-  <div>
-    <NuxtLayout>
-      <NuxtPage />
-      <Notification />
-    </NuxtLayout>
-  </div>
+  <NuxtLayout>
+    <NuxtPage />
+    <Notification />
+  </NuxtLayout>
 </template>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+
 html {
   font-family: 'Space Mono', monospace;
   overflow-y: overlay;

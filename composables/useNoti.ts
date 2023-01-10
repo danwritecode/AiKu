@@ -1,7 +1,7 @@
-import { useNotificationStore, NotificationType } from '~/stores/notification'
+import { useNotificationStore, NotiType } from '~/stores/notification'
 
 export const useNoti = (
-  type: NotificationType,
+  type: NotiType,
   title: string,
   message: string
 ) => {
