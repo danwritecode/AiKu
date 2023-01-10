@@ -5,27 +5,42 @@
         <div class="shadow sm:overflow-hidden sm:rounded-md">
           <div class="dark:bg-zinc-900 bg-white py-6 px-4 sm:p-6">
             <div>
-              <h2 id="payment-details-heading" class="text-lg font-medium leading-6 dark:text-zinc-100 text-zinc-900">Change Password</h2>
-              <p class="mt-1 text-sm dark:text-zinc-400 text-zinc-500">Change your password</p>
+              <h2 id="payment-details-heading" class="text-lg font-medium leading-6 dark:text-zinc-100 text-zinc-900">Reset password</h2>
+              <p class="mt-1 text-sm dark:text-zinc-400 text-zinc-500">Reset your password here. You will receive a link to reset your password.</p>
             </div>
 
-            <div class="mt-6 grid grid-cols-4 gap-6">
-              <div class="col-span-4 sm:col-span-2">
-                <label for="first-name" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">First name</label>
-                <input type="text" name="first-name" id="first-name" class="mt-1 block w-full dark:bg-zinc-800 rounded-md border dark:border-zinc-500 border-zinc-300 py-2 px-3 shadow-sm dark:focus:border-violet-600 focus:border-violet-600 focus:outline-none focus:ring-violet-900 sm:text-sm transition-hover-300">
-              </div>
-
-              <div class="col-span-4 sm:col-span-2">
-                <label for="last-name" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">Last name</label>
-                <input type="text" name="last-name" id="last-name" class="mt-1 block w-full dark:bg-zinc-800 rounded-md border dark:border-zinc-500 border-zinc-300 py-2 px-3 shadow-sm dark:focus:border-violet-600 focus:border-violet-600 focus:outline-none focus:ring-violet-900 sm:text-sm transition-hover-300">
-              </div>
+            <div class="mt-6 w-1/2 sm:w-full">
+              <p class="text-sm dark:text-zinc-400 text-zinc-500">Reset Password</p>
+              <SubmitButton @submit="resetPassword()" submit-text="Reset password" size="md" color="violet" :submit-loading="resetPwdLoading" :is-valid-state="true" class="mt-1.5"/>
             </div>
-          </div>
-          <div class="dark:bg-zinc-900 dark:border-t dark:border-zinc-600 bg-zinc-50 px-4 py-3 text-right sm:px-6">
-            <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-zinc-800 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 transition-hover-300">Save</button>
           </div>
         </div>
       </form>
     </section>
   </div>
 </template>
+
+<script setup lang="ts">
+const config = useRuntimeConfig()
+const user = useSupabaseUser()
+const client = useSupabaseAuthClient()
+
+const resetPwdLoading = ref(false)
+
+const resetPassword = async() => {
+  resetPwdLoading.value = true
+  const { error } = await client.auth.resetPasswordForEmail(user.value?.email!, {
+    redirectTo: `${config.public.baseUrl}/password-update`
+  })
+
+  if(error) {
+    useNoti("error", 'Failed to reset password', error.message)
+    resetPwdLoading.value = false
+    return
+  }
+
+  resetPwdLoading.value = false
+  useNoti("success", "Email sent", "Reset link sent to your email")
+}
+
+</script>

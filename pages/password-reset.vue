@@ -8,9 +8,7 @@
 
         <div class="mt-8">
           <div class="mt-6">
-            <form
-              class="space-y-6"
-            >
+            <form class="space-y-6" @keyup.prevent.enter="resetPassword()">
               <div>
                 <label for="email" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">Email address</label>
                 <div class="mt-1">

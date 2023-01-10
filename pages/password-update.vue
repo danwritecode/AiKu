@@ -9,7 +9,7 @@
 
         <div class="mt-8">
           <div class="mt-6">
-            <form class="space-y-4">
+            <form class="space-y-4" @keyup.prevent.enter="updatePassword()">
               <div>
                 <label for="password" class="block text-sm font-medium dark:text-zinc-300 text-zinc-700">Password</label>
                 <div class="mt-1">
@@ -40,6 +40,8 @@
 <script setup lang="ts">
 
 const client = useSupabaseAuthClient()
+const user = useSupabaseUser()
+
 const password = ref('')
 const passwordConfirm = ref('')
 
@@ -90,6 +92,13 @@ const updatePassword = async () => {
   }
 
   updatePwdLoading.value = false
+
+  if (user) {
+    navigateTo("/my-stuff")
+    useNoti("success", "Password reset", "Password successfully changed.")
+    return
+  }
+
   useNoti("success", "Password reset", "Password successfully changed. Please login again.")
   navigateTo("/login")
 }

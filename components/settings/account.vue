@@ -10,13 +10,10 @@
             </div>
 
             <div class="mt-6">
-              <p class="text-sm dark:text-zinc-400 text-zinc-500">Delete User</p>
-              <SubmitButton @submit="showRealDeleteUser = true" submit-text="Delete user" size="md" color="violet" :submit-loading="false" :is-valid-state="!showRealDeleteUser" class="mt-1.5" />
+              <p class="text-sm dark:text-zinc-400 text-zinc-500">Delete Account</p>
+              <SubmitButton @submit="showRealDeleteUser = true" submit-text="Delete account" size="md" color="violet" :submit-loading="false" :is-valid-state="!showRealDeleteUser" class="mt-1.5" />
               <SubmitButton v-if="showRealDeleteUser" @submit="deleteUser()" submit-text="Confirm deletion" size="md" color="violet" :submit-loading="deleteUserLoading" :is-valid-state="true" class="mt-1.5" />
             </div>
-          </div>
-          <div class="dark:bg-zinc-900 dark:border-t dark:border-zinc-600 bg-zinc-50 px-4 py-3 text-right sm:px-6">
-            <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-zinc-800 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 focus:ring-offset-2 transition-hover-300">Save</button>
           </div>
         </div>
       </form>

@@ -54,7 +54,7 @@
 
           <div class="mt-6">
             <form
-              @submit.prevent="signUp()"
+              @keyup.prevent.enter="signUp()"
               class="space-y-6"
             >
               <div>
@@ -72,7 +72,7 @@
               </div>
 
               <div>
-                <button type="submit" class="flex w-full justify-center rounded-md border border-transparent bg-violet-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 transition-hover-300">Sign up</button>
+                <SubmitButton @submit="signUp()" submit-text="Sign up" size="md" color="violet" :submit-loading="signUpLoading" :is-valid-state="email !== '' && password !== ''" class="mt-1.5"/>
               </div>
             </form>
           </div>
@@ -88,16 +88,21 @@
 <script setup lang="ts">
 
 const client = useSupabaseAuthClient()
-const user = useSupabaseUser()
 
 const email = ref('')
 const password = ref('')
 
+const signUpLoading = ref(false)
+
 const signUp = async() => {
+  signUpLoading.value = true
+
   const { data, error } = await client.auth.signUp({
     email: email.value,
     password: password.value
   })
+
+  signUpLoading.value = false
 
   if(error) {
     useNoti("error", 'Uh oh', error.message)
